@@ -93,8 +93,9 @@ loopplotexp <- function(directory,
   ## loop through and plot list of experiments
   myexp <- c(as.list(colnames(data.animal.joined[, -(1:2)])))
   allplots <- list()
-  allplots <- map(myexp, ploteachexp, directory, analysis, ordercolumns, ordercolumns_manual, 
-                  exclude.animals, orderlevelcond, acceptable.nas, saveplotdir = F)
+  allplots <- map(myexp, ploteachexp, directory, analysis, orderlevelcond = orderlevelcond,
+                  saveplotdir = F, data.animal.joined = data.animal.joined, ordercolumns, 
+                  ordercolumns_manual, exclude.animals, acceptable.nas)
 
   # save all plots in one PDF
   pdf(paste0(saveplotdir, "/Boxplots_all_experiments.pdf"), width = 7, height = 5)

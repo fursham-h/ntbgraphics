@@ -82,20 +82,38 @@
 #'                      saveplotdir = paste0(system.file("../plots", package = "ntbgraphics", mustWork = T),"/"))
 
 
+# F: some of these arguments are meant specifically for getexpdata. 
+# Consider using the ... variable to pass these arguments into getexpdata
 ploteachexp <- function(expname,
                         directory,
                         analysis = c("2arm_ko","2arm_tg", "2arm_sd", "2arm_treat",
                                      "4arm_sd_ko", "4arm_sd_tg", "4arm_treat_ko", "4arm_treat_tg"),
-                        ordercolumns = c("ntb", "rdoc", "manual"),
-                        ordercolumns_manual = FALSE,
-                        exclude.animals = FALSE,
                         orderlevelcond = c("other", "gtblock", "etblock", "2rev"),
-                        acceptable.nas = "unlimited",
-                        saveplotdir = directory) {
+                        data.animal.joined = NULL,
+                        saveplotdir = directory,
+                        ...) {
+
+# Previous version
+# ploteachexp <- function(expname,
+#                         directory,
+#                         analysis = c("2arm_ko","2arm_tg", "2arm_sd", "2arm_treat",
+#                                      "4arm_sd_ko", "4arm_sd_tg", "4arm_treat_ko", "4arm_treat_tg"),
+#                         ordercolumns = c("ntb", "rdoc", "manual"),
+#                         ordercolumns_manual = FALSE,
+#                         exclude.animals = FALSE,
+#                         orderlevelcond = c("other", "gtblock", "etblock", "2rev"),
+#                         acceptable.nas = "unlimited",
+#                         saveplotdir = directory) {
+#   
+#   
+  
+  # F: Check for mandatory arguments expname and directory. See getexpdata function
   
   #getexpdata
-  data.animal.joined <- getexpdata(directory, analysis, ordercolumns, ordercolumns_manual, exclude.animals, 
-                                   orderlevelcond, acceptable.nas, return.matrix = F)
+  if (is.null(data.animal.joined)) {
+    data.animal.joined <- getexpdata(directory, analysis, orderlevelcond = orderlevelcond, ...)  # F: Now the additional arguments for getexpdata is stored in ...
+  }
+  
   
   # define axis limits
   ymin = min(data.animal.joined[[expname]], na.rm = TRUE)*0.25

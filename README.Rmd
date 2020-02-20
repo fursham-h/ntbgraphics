@@ -131,9 +131,22 @@ Also note that the directory within these lines aims for working on every comput
 rm(list = ls(all.names = TRUE))
 library(ntbgraphics)
 
+# retrieve directory containing sample excel files
+sample_dir <- paste0(system.file("extdata", package = "ntbgraphics", mustWork = T))       # F: for cleanliness and simplicity, save dir to a variable
+
+##### F
+# The list of parameters for getexpdata example looks intimidating. Parameters with default values (naomit, return.matrix.mean, directional) do not have to be specified
+# for ordercolumns, consider setting a default value. See function for details.
+# I would simplify this example to just this:
+# data.animal.joined <- getexpdata(directory = sample_dir,
+#                                  analysis = "4arm_sd_tg",
+#                                  exclude.animals =  c("900200000099671", "900200000099583"),
+#                                  orderlevelcond = "gtblock",
+#                                  acceptable.nas = 1)
+
+
 ## (getexpdata) get modified table with data
-data.animal.joined <- getexpdata(directory = paste0(system.file("extdata/", package = "ntbgraphics", 
-                                                                mustWork = T),"/"),
+data.animal.joined <- getexpdata(directory = sample_dir,
                                  analysis = "4arm_sd_tg",
                                  ordercolumns = "ntb",
                                  ordercolumns_manual = FALSE,
@@ -149,25 +162,29 @@ data.animal.joined <- getexpdata(directory = paste0(system.file("extdata/", pack
                                  directional = TRUE,
                                  absoluteval = FALSE)
 
+
+
+
 ## (ploteachexp) plot a defined experiment
 ploteachexp(expname = "Meanspeed",
-            directory = paste0(system.file("extdata", package = "ntbgraphics", mustWork = T),"/"),
+            directory = sample_dir,
             analysis = "4arm_sd_tg",
-            exclude.animals = FALSE,
+            saveplotdir = FALSE,
             orderlevelcond = "etblock",
-            acceptable.nas = 2,
-            saveplotdir = FALSE)
+            exclude.animals = FALSE,
+            acceptable.nas = 2)
            #saveplotdir = paste0(system.file("extdata", package = "ntbgraphics", mustWork = T),"/"))
 
 ## (loopplotexp) plot all experiments
 loopplotexp(directory = paste0(system.file("extdata", package = "ntbgraphics", mustWork = T),"/"),
             analysis = "4arm_sd_tg",
+            orderlevelcond = "etblock",
            #analysis = "2arm_sd",
             ordercolumns = "rdoc",
+           saveplotdir = directory,
             exclude.animals = FALSE,
-            orderlevelcond = "etblock",
-            acceptable.nas = 0,
-            saveplotdir = directory)
+            acceptable.nas = 0
+            )
 
 ## (heatmapexp) print out heatmap
 data.animal.matrix <- heatmapexp(directory = paste0(system.file("extdata", package = "ntbgraphics",

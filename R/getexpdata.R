@@ -117,6 +117,25 @@ getexpdata <- function(directory,
                        directional = FALSE,
                        absoluteval = FALSE) {
   
+  # F: Consider checking for mandatory arguments (directory) and setting default values
+  # for analysis, ordercolumns and orderlevelcond
+  # check out assertthat package for more assertions
+  
+  # example
+  if (missing(directory)) {
+    stop("Please provide path to 'Meta Behavior' and 'Animal List' files")
+  } else if (!dir.exists(directory)) {
+    stop(sprintf("Path `%s` do not exist", directory))
+  } 
+  analysis <- analysis[1]
+  ordercolumns <- ordercolumns[1]
+  orderlevelcond <- orderlevelcond[1]
+  
+  # F: optional, check for data file first
+  if (!exists(paste0(directory,"/Meta Behavior.xlsx")) | !exists(paste0(directory,"/Animal List.xlsx"))) {
+    stop(sprintf("Path `%s` do not contain input excel files", directory))
+  }
+  
   ## import data
   meta.data <-  readxl::read_excel(paste0(directory,"/Meta Behavior.xlsx"))
   animal.list <-  readxl::read_excel(paste0(directory, "/Animal List.xlsx"))
@@ -269,8 +288,10 @@ getexpdata <- function(directory,
     # finally, arrange by condition
     arrange(.,Condition)
   
+  # F: below, " == TRUE" statements are not necessary as the condition are already returning TRUE/FALSE boolean
+  # same goes till line 359
   # option for creating matrix with different possible parameters
-  if(return.matrix == TRUE) {
+  if(return.matrix) {
     
     # standard matrix
     if (return.matrix.mean == FALSE) {
@@ -282,7 +303,7 @@ getexpdata <- function(directory,
     data.animal.matrix <- data.animal.matrix %>% 
       select(nth(colnames(data.animal.matrix), 2):last(colnames(data.animal.matrix))) %>%
       data.matrix() %>%
-      `if`(naomit == TRUE, na.omit(.), .) %>%
+      `if`(naomit, na.omit(.), .) %>%
       scale()
     
     # set NAs to zero
@@ -290,7 +311,7 @@ getexpdata <- function(directory,
     }
     
     # matrix containing means for every group only
-    if (return.matrix.mean == TRUE) {
+    if (return.matrix.mean) {
     length.col <- data.animal.joined %>% 
       colnames() %>% 
       length() %>% 
@@ -309,7 +330,7 @@ getexpdata <- function(directory,
     # inverse z-scoring accordingly to directionality paradigm
     col.names.actual <- colnames(data.animal.matrix)
     
-    if ('Rotations' %in% col.names.actual == TRUE && directional == TRUE) {
+    if ('Rotations' %in% col.names.actual && directional) {
       data.animal.matrix[, "Rotations"] <- data.animal.matrix[, "Rotations"]*-1
     }
     if ('FreezeBase' %in% col.names.actual == TRUE && directional == TRUE) {
@@ -338,7 +359,7 @@ getexpdata <- function(directory,
   }
   
   # return amended dataframe
-  if(return.matrix == FALSE) {
+  if(!return.matrix) {
     return(data.animal.joined)
   }
   # return amended matrix
